@@ -59,7 +59,7 @@ Future<Stream<FileSystemEvent>> createWatcher(String path) async {
   } else if (await FileSystemEntity.isDirectory(path)) {
     return new Directory(path).watch(recursive: true);
   } else {
-    throw "$path must be a file or a directory.";
+    throw '$path must be a file or a directory.';
   }
 }
 
