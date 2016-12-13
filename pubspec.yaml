@@ -1,5 +1,12 @@
-name: fs_watcher
+name: rewatcher
 version: 0.0.1
-description: A simple console application.
-#dependencies:
-#  foo_bar: '>=1.0.0 <2.0.0'
+description: A fast CLI tool for watching and rerunning
+author: just nobody
+homepage: https://github.com/just-nobody/rewatcher
+
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+
+dependencies:
+  args: '>=0.10.0 <0.14.0'
+  shelf: '>=0.6.0 <0.7.0'
