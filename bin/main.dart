@@ -4,6 +4,11 @@ import 'dart:convert';
 import 'package:args/args.dart';
 
 main(List<String> args) async {
+  if (!FileSystemEntity.isWatchSupported) {
+    print('Watching not supported for this system. Sorry :(');
+    return;
+  }
+
   final parser = new ArgParser(allowTrailingOptions: true)
   ..addOption('watch', abbr: 'w', allowMultiple: true);
 
