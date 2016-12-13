@@ -11,7 +11,7 @@ main(List<String> args) async {
   }
 
   final parser = new ArgParser(allowTrailingOptions: true)
-  ..addOption('watch', abbr: 'w', allowMultiple: true);
+  ..addOption('watch', abbr: 'w', allowMultiple: true, defaultsTo: Directory.current.path);
 
   final result = parser.parse(args);
 
@@ -54,10 +54,10 @@ Future<Stream<FileSystemEvent>> createWatcher(String path) async {
     if (!Platform.isWindows) {
       throw "Couldn't watch $path: Watching files isn't supported on this system. Sorry :(";
     } else {
-      return new File(path).watch();
+      return new File(path).watch(recursive: true);
     }
   } else if (await FileSystemEntity.isDirectory(path)) {
-    return new Directory(path).watch();
+    return new Directory(path).watch(recursive: true);
   } else {
     throw "$path must be a file or a directory.";
   }
