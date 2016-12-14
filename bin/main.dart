@@ -4,25 +4,44 @@ import 'dart:convert';
 
 import 'package:args/args.dart';
 
+const usage = '''
+rewatcher: watch a path and rerun on changes
+
+Usage: rewatcher [-w some/path] [-w some/other/path] [-r "executable with args"]
+''';
+
 main(List<String> args) async {
   if (!FileSystemEntity.isWatchSupported) {
     print('Watching not supported for this system. Sorry :(');
     return;
   }
 
+  if (args.isEmpty) {
+    print(usage);
+    return;
+  }
+
   final parser = new ArgParser(allowTrailingOptions: true)
-  ..addOption('watch', abbr: 'w', allowMultiple: true, defaultsTo: Directory.current.path);
+  ..addOption('watch', abbr: 'w', allowMultiple: true, defaultsTo: Directory.current.path)
+  ..addOption('run', abbr: 'r');
 
   final result = parser.parse(args);
 
+  if (result['run'] == null) {
+    print(usage);
+    return;
+  }
+
   final watchPaths = result['watch'];
-  final program = result.rest.first;
-  final arguments = result.rest.sublist(1);
+  final run = result['run'].split(' ') as List<String>;
+
+  final programExec = run.first;
+  final programArgs = run.skip(1).toList();
 
   Process process;
 
-  print('Running "$program ${arguments.join(' ')}"');
-  process = await runProgram(program, arguments);
+  print('Running "${result['run']}"');
+  process = await runProgram(programExec, programArgs);
 
   for (final path in watchPaths) {
     try {
@@ -33,7 +52,7 @@ main(List<String> args) async {
         if (process != null) {
           process.kill();
           process = null;
-          process = await runProgram(program, arguments);
+          process = await runProgram(programExec, programArgs);
         }
       });
     } catch(err) {
@@ -44,7 +63,7 @@ main(List<String> args) async {
 }
 
 Future<Process> runProgram(String program, List<String> arguments) async {
-  return await Process.start(program, arguments)
+  return await Process.start(program, arguments, runInShell: true)
     ..stdout.transform(UTF8.decoder).listen(print)
     ..stderr.transform(UTF8.decoder).listen(print);
 }
